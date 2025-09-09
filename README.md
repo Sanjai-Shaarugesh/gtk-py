@@ -1,7 +1,7 @@
 ## **Gtk-py**
 
 > [!NOTE]
-### To run it type
-```
-just run 
-```
+> ### To run it type
+> ```
+> just run 
+> ```
