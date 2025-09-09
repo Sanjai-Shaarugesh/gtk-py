@@ -1,0 +1,31 @@
+[project]
+name = "gtk-py"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pygobject>=3.54.0",
+]
+
+[dependency-groups]
+dev = [
+    "pygobject-stubs>=2.13.0",
+]
+
+[tool.pyright]
+# Option A: Ignore undefined variables globally
+reportUndefinedVariable = "none"
+
+# Option B: More specific - ignore missing imports
+reportMissingImports = "none"
+
+# Option C: Ignore attribute access issues
+reportAttributeAccessIssue = "none"
+
+# Option D: Add stub search paths if needed
+stubPath = ".venv/lib/python*/site-packages"
+
+
+
+
