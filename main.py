@@ -9,15 +9,77 @@ from gi.repository import Gtk , Adw
 class MainWindow(Gtk.ApplicationWindow):
     def __init__(self,*args,**kwargs):
         super().__init__(*args,**kwargs)
-        self.box1 = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        self.set_child(self.box1)
+        self.box1 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        self.box2 = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.box3 = Gtk.Box(orientation= Gtk.Orientation.VERTICAL)
+        
+        # self.set_child(self.box1)
         
         self.button= Gtk.Button(label="sanjai")
-        self.box1.append(self.button)
+        # self.box1.append(self.button)
         self.button.connect('clicked' , self.hello)
         
-    def hello(self,button):
+        self.set_child(self.box1)
+        self.box1.append(self.box2)
+        self.box1.append(self.box3)
+        
+        self.box2.append(self.button)
+        
+        self.check = Gtk.CheckButton(label="And goodbye?")
+        self.check.connect('toggled', self.hello)
+        self.box2.append(self.check)
+        
+        
+        self.radio1 = Gtk.CheckButton(label="test")
+        self.radio2 = Gtk.CheckButton(label="test")
+        self.radio3 = Gtk.CheckButton(label="test")
+        
+        self.radio2.set_group(self.radio1)
+        self.radio3.set_group(self.radio1)
+        
+        self.radio1.connect("toggled",self.radio_toggled)
+        self.radio2.connect("toggled",self.radio_toggled)
+        self.radio3.connect("toggled",self.radio_toggled)
+        
+        self.box2.append(self.radio1)
+        self.box2.append(self.radio2)
+        self.box2.append(self.radio3)
+        
+        
+        self.switch_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+        
+        self.switch = Gtk.Switch()
+        self.switch.set_active(True)
+        self.switch.connect("state-set",self.switch_toggled)
+        
+        self.switch_box.append(self.switch)
+        self.box3.append(self.switch_box)
+    
+        
+        self.set_default_size(600,250)
+        self.set_title("Gtk-py")
+        
+    def switch_toggled(self,widget,state):
+            if widget.get_active():
+                print("switch is on")
+            else:
+                print("switch is off")
+        
+    def hello(self,widget):
         print("Hi sanjai!")
+        
+        if self.check.get_active():
+            print("Goodbye sanjai!")
+            self.close()
+            
+    def radio_toggled(self,widget):
+        if self.radio1.get_active():
+            print("Radio 1 is selected")
+        elif self.radio2.get_active():
+            print("Radio 2 is selected")
+        elif self.radio3.get_active():
+            print("Radio 3 is selected")
+        
         
 class MyApp(Adw.Application):
    def __init__(self,**kwargs):
