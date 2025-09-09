@@ -1,10 +1,15 @@
 import gi
 import sys
 gi.require_version('Gtk','4.0')
+from token import TILDE
 gi.require_version("Adw",'1')
 gi.require_version("GioUnix",'2.0')
-from gi.repository import Gtk , Adw
+from gi.repository import Gtk , Adw , Gdk
 
+
+css_provider = Gtk.CssProvider()
+css_provider.load_from_path("style.css")
+Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), css_provider , Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
 class MainWindow(Gtk.ApplicationWindow):
     def __init__(self,*args,**kwargs):
@@ -54,10 +59,16 @@ class MainWindow(Gtk.ApplicationWindow):
         
         self.switch_box.append(self.switch)
         self.box3.append(self.switch_box)
-    
+        
+        self.label = Gtk.Label(label="Gtk-py")
+        self.box2.append(self.label)
+        self.label.set_css_classes(["label"])
+           
         
         self.set_default_size(600,250)
         self.set_title("Gtk-py")
+        
+        
         
     def switch_toggled(self,widget,state):
             print(f"The switch has been switched {'on' if state else 'off'} ")
