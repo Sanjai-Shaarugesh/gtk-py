@@ -60,10 +60,7 @@ class MainWindow(Gtk.ApplicationWindow):
         self.set_title("Gtk-py")
         
     def switch_toggled(self,widget,state):
-            if widget.get_active():
-                print("switch is on")
-            else:
-                print("switch is off")
+            print(f"The switch has been switched {'on' if state else 'off'} ")
         
     def hello(self,widget):
         print("Hi sanjai!")
