@@ -1,7 +1,6 @@
 import gi
 import sys
 gi.require_version('Gtk','4.0')
-from token import TILDE
 gi.require_version("Adw",'1')
 gi.require_version("GioUnix",'2.0')
 from gi.repository import Gtk , Adw , Gdk
@@ -60,6 +59,23 @@ class MainWindow(Gtk.ApplicationWindow):
         self.switch_box.append(self.switch)
         self.box3.append(self.switch_box)
         
+        self.slider = Gtk.Scale()
+        self.slider.set_digits(0)
+        self.slider.set_range(0,10)
+        self.slider.set_draw_value(True)
+        self.slider.set_value(5)
+        self.slider.connect('value-changed',self.slider_changed)
+        self.box2.append(self.slider)
+        
+        
+        self.header = Gtk.HeaderBar()
+        self.set_titlebar(self.header)
+        
+        self.open_button = Gtk.Button(label="open")
+        self.header.pack_start(self.open_button)
+        
+        self.open_button.set_icon_name("document-open-symbolic")
+        
         self.label = Gtk.Label(label="Gtk-py")
         self.box2.append(self.label)
         self.label.set_css_classes(["label"])
@@ -88,6 +104,8 @@ class MainWindow(Gtk.ApplicationWindow):
         elif self.radio3.get_active():
             print("Radio 3 is selected")
         
+    def slider_changed(self,widget):
+        print(int(widget.get_value()))
         
 class MyApp(Adw.Application):
    def __init__(self,**kwargs):
