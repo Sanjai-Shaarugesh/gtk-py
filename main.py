@@ -201,6 +201,9 @@ class MainWindow(Gtk.ApplicationWindow):
         # handling mouse / touch events
         self.evk = Gtk.GestureClick.new()
         self.evk.connect("pressed",self.dw_click)
+        
+        self.evk.set_button(0)
+        
         self.dw.add_controller(self.evk)
         
         self.blobs = []
@@ -383,6 +386,8 @@ class MainWindow(Gtk.ApplicationWindow):
     def dw_click(self,gesture,n_press,x,y):
         self.blobs.append((x,y))
         self.dw.queue_draw() # force a redraw
+        button = gesture.get_current_button()
+        print(f"Current button: {button}")
 
     def clear_drawing(self,widget=None):
         "clear all drawing"
