@@ -178,7 +178,9 @@ class MainWindow(Gtk.ApplicationWindow):
         self.add_action(action)
         self.add_action(action2)
         
-        
+        test_all_btn = Gtk.Button(label="Test All")
+        test_all_btn.connect("clicked", self.test_all_messages)
+        self.main_container.append(test_all_btn)
         
         
         self.set_default_size(600,250)
@@ -233,6 +235,7 @@ class MainWindow(Gtk.ApplicationWindow):
             
     def do_something(self,action,params):
         print("Doing something")
+        
         
     def show_about(self,action,params):
         self.about = Gtk.AboutDialog()
@@ -298,15 +301,49 @@ class MainWindow(Gtk.ApplicationWindow):
        # show using custom info bar
        self.show_custom_info("Custom InfoBar s now visible! you can close it with the X button.","info")
        
+    def test_all_messages(self, widget=None):
+        """Test all message types in sequence"""
+        import threading
+        import time
+        
+        def show_messages():
+            messages = [
+                ("Testing Info message...", "info"),
+                ("Testing Success message...", "success"),
+                ("Testing Warning message...", "warning"), 
+                ("Testing Error message...", "error")
+            ]
+            
+            for i, (msg, msg_type) in enumerate(messages):
+                # Use GLib.idle_add to safely update UI from thread
+                GLib.idle_add(self.show_custom_info, f"{i+1}/4: {msg}", msg_type)
+                time.sleep(2)  # Wait 2 seconds between messages
+        
+        # Run in separate thread to avoid blocking UI
+        thread = threading.Thread(target=show_messages)
+        thread.daemon = True
+        thread.start()
+
         
 class MyApp(Adw.Application):
-   def __init__(self,**kwargs):
+    def __init__(self,**kwargs):
        super().__init__(**kwargs)
        self.connect('activate',self.on_activate)
+       self.connect('open',self.on_open)
+       self.set_flags(Gio.ApplicationFlags.HANDLES_OPEN)    #Need to the the aaplication we can handle this
        self.win = None
-   def on_activate(self,app):
-       self.win = MainWindow(application=app)
+       
+    def on_activate(self,app):
+       if not self.win:
+           self.win = MainWindow(application=app)
        self.win.present()
+    
+    def on_open(self,app,files,n_files,hints):
+        self.on_activate(app) # adding this beacuse window may have not created yet with this entry point 
+        
+        for file in n_files:
+            print(f"Files to open :{file.get_path}")
+            
        
     
         
