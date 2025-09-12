@@ -205,6 +205,11 @@ class MainWindow(Gtk.ApplicationWindow):
         
         self.blobs = []
         
+        # added clearfor tseting 
+        self.clear_button = Gtk.Button(label="Clear Drawing")
+        self.clear_button.connect("clicked",self.clear_drawing)
+        self.box3.append(self.clear_button)
+        
         
         
         
@@ -378,7 +383,12 @@ class MainWindow(Gtk.ApplicationWindow):
     def dw_click(self,gesture,n_press,x,y):
         self.blobs.append((x,y))
         self.dw.queue_draw() # force a redraw
-        
+
+    def clear_drawing(self,widget=None):
+        "clear all drawing"
+        self.blobs.clear()
+        self.dw.queue_draw()
+        self.show_custom_info("Drawing cleared!","info")
     
 
         
