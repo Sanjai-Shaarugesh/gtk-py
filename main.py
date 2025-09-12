@@ -178,9 +178,26 @@ class MainWindow(Gtk.ApplicationWindow):
         self.add_action(action)
         self.add_action(action2)
         
+        # infobar testing
         test_all_btn = Gtk.Button(label="Test All")
         test_all_btn.connect("clicked", self.test_all_messages)
         self.main_container.append(test_all_btn)
+        
+        # DrawingArea
+        self.dw = Gtk.DrawingArea()
+       
+       # make it fill in available spaces (it will strech with the window)
+        self.dw.set_hexpand(True)
+        self.dw.set_vexpand(True)
+        
+        # instead if we don't want it to fill he availble spaces but want to fixed size
+        # self.dw.set_content_width(100)
+        # self.dw.set_content_height(100)
+        
+        
+        self.dw.set_draw_func(self.draw,None)
+        self.box3.append(self.dw)
+        
         
         
         self.set_default_size(600,250)
@@ -323,6 +340,27 @@ class MainWindow(Gtk.ApplicationWindow):
         thread = threading.Thread(target=show_messages)
         thread.daemon = True
         thread.start()
+        
+    def draw(self,area,c,w,h,date):
+        # c is cario content
+        
+        #fill the background with color
+        c.set_source_rgb(0,0,0)
+        c.paint()
+        
+        # Draw line
+        c.set_source_rgb(0.5,0,0.5)
+        c.set_line_width(3)
+        c.move_to(10,10)
+        c.line_to(w -10 , h - 10)
+        c.stroke()
+        
+        # draw some text
+        c.set_source_rgb(0.1,0.1,0.1)
+        c.select_font_face("Sans")
+        c.set_font_size(13)
+        c.move_to(25,35)
+        c.show_text("sanjai")
 
         
 class MyApp(Adw.Application):
