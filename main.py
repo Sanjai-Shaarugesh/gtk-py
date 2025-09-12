@@ -121,31 +121,51 @@ class MainWindow(Gtk.ApplicationWindow):
         self.hamburger.set_popover(self.popover)
         self.hamburger.set_icon_name("open-menu-symbolic")
         
-        self.info = Gtk.InfoBar()
-        self.info.set_message_type(Gtk.MessageType.INFO)
-        self.info.set_show_close_button(True) # added close button 
-        self.info.set_revealed(False)
+        self.banner = Adw.Banner()
+        self.banner.set_title("Gtk-py")
+        self.banner.set_revealed(False)
         
-        # horizontal box for ingo content 
-        info_context_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
-        info_icon = Gtk.Image.new_from_icon_name("dialog-information-symbolic")
-        info_context_box.append(info_icon)
+        # self.info = Gtk.InfoBar()
+        # self.info.set_message_type(Gtk.MessageType.INFO)
+        # self.info.set_show_close_button(True) # added close button 
+        # self.info.set_revealed(False)
         
+        self.info_revealer = Gtk.Revealer()
+        self.info_revealer.set_reveal_child(False)
+        self.info_revealer.set_transition_type(Gtk.RevealerTransitionType.SLIDE_DOWN)
+        self.info_revealer.set_transition_duration(200)
+        self.info_revealer.get_child_revealed()
+        
+        # horizontal box for info content 
+        self.info_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL,spacing=6)
+        self.info_box.set_css_classes(["toolbar","infobar"])
+        
+        
+        
+        self.info_icon = Gtk.Image.new_from_icon_name("dialog-information-symbolic")
+        self.info_box.append(self.info_icon)
         
         
         self.info_label = Gtk.Label(label="This is an info message")
         self.info_label.set_hexpand(True)
         self.info_label.set_halign(Gtk.Align.START)
         
-        self.info.add_child(info_context_box)
-        info_context_box.append(self.info_label)
+        
+        self.info_box.append(self.info_label)
         
         # connect close button
-        self.info.connect("response", self.on_info_response)
+        self.info_close_button = Gtk.Button()
+        self.info_close_button.set_icon_name("window-close-symbolic")
+        self.info_close_button.add_css_class("flat")
+        self.info_close_button.connect("clicked", self.hide_info_bar)
+        self.info_box.append(self.info_close_button)
+        
+        # add  info revealer box
+        self.info_revealer.set_child(self.info_box)
         
         # a verical bar to hold the info bar
         self.main_container = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        self.main_container.append(self.info)
+        self.main_container.append(self.info_revealer)
         
         # add main_container below the InfoBar
         self.main_container.append(self.box1)
@@ -199,20 +219,17 @@ class MainWindow(Gtk.ApplicationWindow):
                     print(f"File path is {file.get_path()}")
                     # Show file selection in InfoBar with filename
                     filename = file.get_basename()  # Gets just the filename, not full path
-                    self.info_label.set_text(f"File selected: {filename}")
-                    self.info.set_message_type(Gtk.MessageType.INFO)
-                    self.info.set_revealed(True)
+                    self.show_custom_info(f"File selected: {filename}", "info")
+                    
                 else:
                     # Show message when no file was selected (dialog was cancelled)
-                    self.info_label.set_text("File selection was cancelled")
-                    self.info.set_message_type(Gtk.MessageType.WARNING)
-                    self.info.set_revealed(True)
+                    self.show_custom_info("File selection was cancelled","warning")
+                    
             except GLib.Error as error:
                 print(f"Error opening file: {error.message}")
                 # Show error in InfoBar
-                self.info_label.set_text(f"Error: {error.message}")
-                self.info.set_message_type(Gtk.MessageType.ERROR)
-                self.info.set_revealed(True)
+                self.show_custom_info(f"Error: {error.message}","error")
+                
             
     def do_something(self,action,params):
         print("Doing something")
@@ -234,29 +251,59 @@ class MainWindow(Gtk.ApplicationWindow):
         self.about.set_visible(True)
       
        # Show about dialog action in InfoBar
-        self.info_label.set_text("About dialog opened!")
-        self.info.set_message_type(Gtk.MessageType.INFO)
-        self.info.set_revealed(True)
-      
-    def show_info_bar(self,widget):
-        """Show the InfoBar with a message"""
-        self.info_label.set_text("InfoBar is now visible! You can close it with the X button.")
-        self.info.set_message_type(Gtk.MessageType.INFO)
-        self.info.set_revealed(True)
+        self.custom_info_label("About dialog opened!","info")
         
-    def on_info_response(self,info_bar, response_id):
-        """Handle InfoBar response (close the button clicked)"""
-        print(f"InfoBar response: {response_id}")
-        self.info.set_revealed(False)
+        
+      
+    def show_custom_info(self,message,message_type="info"):
+        """Show the InfoBar with a message with its types"""
+        
+        self.info_label.set_text(message)
+        self.info_revealer.set_reveal_child(True)
+        
+        # update the icon based on the message type
+        if message_type == "error":
+            self.info_icon.set_from_icon_name("dialog-error-symbolic")
+            self.info_box.set_css_classes(["error-bar","rounded-box"])
+        
+        elif message_type == "warning":
+            self.info_icon.set_from_icon_name("dialog-warning-symbolic")
+            self.info_box.set_css_classes(["warning-bar","rounded-box"])
+            
+        elif message_type == "info":
+            self.info_icon.set_from_icon_name("dialog-information-symbolic")
+            self.info_box.set_css_classes(["info-bar","rounded-box"])
+            
+        elif message_type == "success":
+            self.info_icon.set_from_icon_name("dialog-information-symbolic")
+            self.info_box.set_css_classes(["success-bar","rounded-box"])
+            
+        else:
+            self.info_icon.set_from_icon_name("dialog-information-symbolic")
+            self.info_box.set_css_classes(["info-bar","rounded-box"])
+            
+        
+    def hide_info_bar(self,widget=None):
+        """Hide custom infobar """
+        self.info_revealer.set_reveal_child(False)
         
     
         
+    
+    def show_info_bar(self,widget):
+       "show infobar component bar with messages" 
+       self.banner.set_title("InfoBar is now visible! You can close it with the X button.")
+       self.banner.set_revealed(True)
+       
+       # show using custom info bar
+       self.show_custom_info("Custom InfoBar s now visible! you can close it with the X button.","info")
+       
         
 class MyApp(Adw.Application):
    def __init__(self,**kwargs):
        super().__init__(**kwargs)
        self.connect('activate',self.on_activate)
-       
+       self.win = None
    def on_activate(self,app):
        self.win = MainWindow(application=app)
        self.win.present()

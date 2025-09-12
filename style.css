@@ -3,3 +3,32 @@
   font-weight: bold;
   color: red;
 }
+
+
+.info-bar {
+    background-color: #3498db;
+    color: white;
+    border-radius: 6px;
+    padding: 8px;
+}
+
+.success-bar {
+    background-color: springgreen;
+    color: white;
+    border-radius: 6px;
+    padding: 8px;
+}
+
+.warning-bar {
+    background-color: #f39c12;
+    color: white;
+    border-radius: 6px;
+    padding: 8px;
+}
+
+.error-bar {
+    background-color: #e74c3c;
+    color: white;
+    border-radius: 6px;
+    padding: 8px;
+}
