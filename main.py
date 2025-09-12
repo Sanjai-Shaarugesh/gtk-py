@@ -198,6 +198,14 @@ class MainWindow(Gtk.ApplicationWindow):
         self.dw.set_draw_func(self.draw,None)
         self.box3.append(self.dw)
         
+        # handling mouse / touch events
+        self.evk = Gtk.GestureClick.new()
+        self.evk.connect("pressed",self.dw_click)
+        self.dw.add_controller(self.evk)
+        
+        self.blobs = []
+        
+        
         
         
         self.set_default_size(600,250)
@@ -348,6 +356,11 @@ class MainWindow(Gtk.ApplicationWindow):
         c.set_source_rgb(0,0,0)
         c.paint()
         
+        c.set_source_rgb(1,0,1)
+        for x,y in self.blobs:
+            c.arc(x,y,10,0,2 * 3.1415926)
+            c.fill()
+        
         # Draw line
         c.set_source_rgb(0.5,0,0.5)
         c.set_line_width(3)
@@ -361,6 +374,12 @@ class MainWindow(Gtk.ApplicationWindow):
         c.set_font_size(13)
         c.move_to(25,35)
         c.show_text("sanjai")
+        
+    def dw_click(self,gesture,n_press,x,y):
+        self.blobs.append((x,y))
+        self.dw.queue_draw() # force a redraw
+        
+    
 
         
 class MyApp(Adw.Application):
