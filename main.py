@@ -206,6 +206,9 @@ class MainWindow(Gtk.ApplicationWindow):
         
         self.dw.add_controller(self.evk)
         
+        self.ew2 = Gtk.EventControllerMotion.new()
+        self.ew2.connect("motion",self.mouse_motion)
+        self.dw.add_controller(self.ew2)
         self.blobs = []
         
         # added clearfor tseting 
@@ -394,6 +397,9 @@ class MainWindow(Gtk.ApplicationWindow):
         self.blobs.clear()
         self.dw.queue_draw()
         self.show_custom_info("Drawing cleared!","info")
+        
+    def mouse_motion(self,motion,x,y):
+        print(f"mouse moved to ({x}, {y})")
     
 
         
