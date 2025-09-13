@@ -190,6 +190,12 @@ class MainWindow(Gtk.ApplicationWindow):
         self.dw.set_hexpand(True)
         self.dw.set_vexpand(True)
         
+        # make the drawing area focusable so it can receive keyboard events
+        self.dw.set_can_focus(True)
+        self.dw.set_focusable(True)
+        self.dw.grab_focus() # Give it focus initially
+        
+        self.dw.set_draw_func(self.draw,None)
         # instead if we don't want it to fill he availble spaces but want to fixed size
         # self.dw.set_content_width(100)
         # self.dw.set_content_height(100)
@@ -209,13 +215,17 @@ class MainWindow(Gtk.ApplicationWindow):
         self.ew2 = Gtk.EventControllerMotion.new()
         self.ew2.connect("motion",self.mouse_motion)
         self.dw.add_controller(self.ew2)
+        
+        self.ew3 = Gtk.EventControllerKey.new()
+        self.ew3.connect("key-pressed",self.key_pressed)
+        self.dw.add_controller(self.ew3)
         self.blobs = []
         
         # added clearfor tseting 
         self.clear_button = Gtk.Button(label="Clear Drawing")
         self.clear_button.connect("clicked",self.clear_drawing)
         self.box3.append(self.clear_button)
-        
+        self.dw.grab_focus()
         
         
         
@@ -400,6 +410,12 @@ class MainWindow(Gtk.ApplicationWindow):
         
     def mouse_motion(self,motion,x,y):
         print(f"mouse moved to ({x}, {y})")
+        
+    def key_pressed(self, controller, keyval, keycode, state):
+        if keyval == Gdk.KEY_q and state & Gdk.ModifierType.CONTROL_MASK:
+            self.close()
+            return True
+        return False
     
 
         
