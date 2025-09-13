@@ -227,7 +227,8 @@ class MainWindow(Gtk.ApplicationWindow):
         self.box3.append(self.clear_button)
         self.dw.grab_focus()
         
-        
+        self.cursor_crosshair = Gdk.Cursor.new_from_name("crosshair")
+        self.dw.set_cursor(self.cursor_crosshair)
         
         self.set_default_size(600,250)
         self.set_title("Gtk-py")
