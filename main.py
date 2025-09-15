@@ -3,7 +3,7 @@ import sys
 gi.require_version('Gtk','4.0')
 gi.require_version("Adw",'1')
 gi.require_version("GioUnix",'2.0')
-from gi.repository import Gtk , Adw , Gdk , GLib , Gio
+from gi.repository import Gtk , Adw , Gdk , GLib , Gio , GObject
 
 
 css_provider = Gtk.CssProvider()
@@ -230,6 +230,11 @@ class MainWindow(Gtk.ApplicationWindow):
         self.cursor_crosshair = Gdk.Cursor.new_from_name("crosshair")
         self.dw.set_cursor(self.cursor_crosshair)
         
+        self.grid1 = Gtk.GridView()
+        self.box3.append(self.grid1)
+        
+
+        
         self.set_default_size(600,250)
         self.set_title("Gtk-py")
         
@@ -419,6 +424,48 @@ class MainWindow(Gtk.ApplicationWindow):
         return False
     
 
+  
+class Fruit(GObject.Object):
+    name = GObject.Property(type=str)
+    def __init__(self,name):
+        super().__init__()
+        self.name = name
+        
+fruits = ["Banana", "Apple", "Strawberry", "Pear", "Watermelon", "Blueberry"]
+ls = Gio.ListStore.new(Fruit)
+for f in fruits:
+    ls.append(Fruit(f))
+    
+ss = Gtk.SingleSelection(model=ls)
+
+# setp gridwindow
+def setup_grid_window(win:MainWindow):
+    win.grid1.set_model(ss)
+    
+    factory = Gtk.SignalListItemFactory()
+    
+    def f_setup(factory,list_item):
+        label = Gtk.Label()
+        label.set_halign(Gtk.Align.START)
+        # label.set_child(label)
+        list_item.set_child(label)
+        
+    def f_bind(factory,list_item):
+        # bind the fruits name to thr label
+        item = list_item.get_item()
+        label = list_item.get_child()
+        
+        if item is None:
+            label.set_text("")
+        else:
+            label.set_text(item.name)
+            
+            
+    factory.connect("setup",f_setup)
+    factory.connect("bind",f_bind)
+    
+    win.grid1.set_factory(factory)
+
         
 class MyApp(Adw.Application):
     def __init__(self,**kwargs):
@@ -431,6 +478,7 @@ class MyApp(Adw.Application):
     def on_activate(self,app):
        if not self.win:
            self.win = MainWindow(application=app)
+           
        self.win.present()
     
     def on_open(self,app,files,n_files,hints):
@@ -440,8 +488,17 @@ class MyApp(Adw.Application):
             print(f"Files to open :{file.get_path}")
             
        
-    
+
         
+original_on_activate = MyApp.on_activate
+
+def patch_on_activate(self,app):
+    original_on_activate(self,app)
+    if self.win:
+        setup_grid_window(self.win)
+
+MyApp.on_activate = patch_on_activate
+
        
 app = MyApp(application_id="com.gtk-py.main")
 app.run(sys.argv)
